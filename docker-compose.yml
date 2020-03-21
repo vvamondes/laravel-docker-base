@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+   
+  app:
+    depends_on:
+      - db
+      - redis
+    links:
+      - db
+      - redis
+    build:
+      dockerfile: ./docker-build-files/Dockerfile
+      context: .
+      args:
+        - DEV_MODE=True
+    volumes:
+      - .:/var/www/html
+    restart: always
+    ports:
+      - 8000:80
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: databaseappdb
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  redis:
+    image: redis:5.0.7-alpine
+    restart: always
+    ports:
+      - 6379:6379
